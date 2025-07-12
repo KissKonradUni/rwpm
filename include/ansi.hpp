@@ -1,5 +1,9 @@
+#pragma once
+
+#include <cstdint>
 #include <cstdio>
 #include <string>
+
 #include <windows.h>
 
 namespace rwpm {
@@ -40,9 +44,9 @@ static const std::basic_string<char> ANSI_BORDER_BOTTOM_LEFT =  "╚";
 static const std::basic_string<char> ANSI_BORDER_BOTTOM_RIGHT =  "╝";
 
 struct iVec2 {
-    int x, y;
+    uint32_t x, y;
 
-    iVec2(int x = 0, int y = 0) : x(x), y(y) {}
+    iVec2(uint32_t x = 0, uint32_t y = 0) : x(x), y(y) {}
 
     iVec2 operator+(const iVec2& other) const {
         return iVec2(x + other.x, y + other.y);
@@ -56,12 +60,15 @@ struct iVec2 {
 class ansi {
 public:
     static void setConsoleOutput();
+    static HANDLE getInputHandle();
+    static HANDLE getOutputHandle();
     static iVec2 getConsoleSize();
     static void setInputMode(const bool raw);
 
     static void clearScreen();
-    static void moveCursor(const int x, const int y);
-    static void drawBorder(const int x, const int y, const int width, const int height);
+    static void moveCursor(const uint32_t x, const uint32_t y);
+    static void drawBorder(const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height);
+    static void drawWindow(const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height, const std::string_view title, const std::string_view description);
 };
 
 }

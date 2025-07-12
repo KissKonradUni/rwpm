@@ -1,17 +1,36 @@
+#include "io.hpp"
+#include "ui.hpp"
 #include "ansi.hpp"
-#include <cstdint>
-#include <vector>
+#include "input.hpp"
 
-void drawMenu(const int x, const int y, const std::vector<std::string_view>& options, const uint8_t& selection) {
+bool shouldClose = false;
+
+void firstMenu(rwpm::InputHandler* inputHandler) {
     using namespace rwpm;
     
-    for (size_t i = 0; i < options.size(); ++i) {
-        ansi::moveCursor(x, y + i * 2);
-        if (i == selection) {
-            printf("%s%s%s", ANSI_BG_CYAN.c_str(), options[i].data(), ANSI_RESET.c_str());
-        } else {
-            printf("%s", options[i].data());
+    Menu testMenu(
+        inputHandler,
+        4, 3,
+        {
+            MenuOption("Option 1", []() { 
+                ansi::moveCursor(4, 18);
+                printf("%sOption 1 selected%s\n", ANSI_GREEN.c_str(), ANSI_RESET.c_str()); 
+            }),
+            MenuOption("Option 2", []() { 
+                ansi::moveCursor(4, 18);
+                printf("%sOption 2 selected%s\n", ANSI_GREEN.c_str(), ANSI_RESET.c_str()); 
+            }),
+            MenuOption("Exit", []() { 
+                shouldClose = true;
+            })
         }
+    );
+
+    while (!testMenu.isFinished() && !shouldClose) {
+        testMenu.drawMenu();
+        inputHandler->updateEvents();
+
+        Sleep(10);
     }
 }
 
@@ -19,39 +38,27 @@ int main(void) {
     using namespace rwpm;
 
     ansi::setConsoleOutput();
+    ansi::setInputMode(true);
     iVec2 consoleSize = ansi::getConsoleSize();
-    consoleSize.y -= 2; // Adjust for scrolling
+    consoleSize.y -= 2;
 
     ansi::clearScreen();
-    ansi::drawBorder(1, 1, consoleSize.x, consoleSize.y);
-    ansi::moveCursor(3, consoleSize.y);
-    printf("%s[Press 'q' to exit]%s", ANSI_BOLD.c_str(), ANSI_RESET.c_str());
     
-    ansi::setInputMode(true);
+    std::string title = ANSI_RESET + "[ " + ANSI_YELLOW + "RWPM" + ANSI_RESET + " ]";
+    std::string desc  = ANSI_RESET + "[ " + ANSI_CYAN + "Press ESC to exit." + ANSI_RESET + " ]";
+    ansi::drawWindow(1, 1, 40, 20, title, desc);
 
-    const auto menuOptions = std::vector<std::string_view>{
-        "Option 1",
-        "Option 2",
-        "Option 3"
-    };
+    Config config;
+    InputHandler inputHandler;
 
-    int menuSelection = 0;
-    drawMenu(3, 2, menuOptions, menuSelection);
-
-    while (true) {
-
-        char input = getchar();
-        if (input == 'q' || input == 'Q') {
-            break;
-        } else if (input == 'w' || input == 'W') {
-            menuSelection = (menuSelection - 1 + 3) % 3;
-        } else if (input == 's' || input == 'S') {
-            menuSelection = (menuSelection + 1) % 3;
-        }
-
-        drawMenu(3, 2, menuOptions, menuSelection);
-    }
+    firstMenu(&inputHandler);
+    
+    Sleep(1000);
     
     rwpm::ansi::setInputMode(false);
+    rwpm::ansi::clearScreen();
+
+    FlushConsoleInputBuffer(ansi::getInputHandle());
+
     return 0;    
 }

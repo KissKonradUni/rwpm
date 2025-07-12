@@ -19,7 +19,8 @@ BIN_DIR = bin
 
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
-EXEC = $(BIN_DIR)/rwpm
+FILE = rwpm
+EXEC = $(BIN_DIR)/$(FILE)
 
 # Default target
 all: prepare $(EXEC)
@@ -46,6 +47,6 @@ clean-all: clean
 
 # Run the executable
 run: all
-	./$(EXEC)
+	cd $(BIN_DIR) && ./$(FILE)
 
 .PHONY: all clean clean-all run prepare
