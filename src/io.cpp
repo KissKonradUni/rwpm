@@ -1,4 +1,5 @@
 #include "io.hpp"
+#include "ansi.hpp"
 
 #include <filesystem>
 #include <cstring>
@@ -10,9 +11,9 @@ Config::Config()
     : steamLibraryPath(""), packStoragePath("")
 {
     load();
-    printf("Loaded configuration:\n");
-    printf("Steam Library Path: %s\n", steamLibraryPath.c_str());
-    printf("Pack Storage Path: %s\n", packStoragePath.c_str());
+    printf("%sLoaded configuration:%s\n", ANSI_GREEN.c_str(), ANSI_RESET.c_str());
+    printf("%s- Steam Library Path: %s%s%s\n", ANSI_GREEN.c_str(), ANSI_CYAN.c_str(), steamLibraryPath.c_str(), ANSI_RESET.c_str());
+    printf("%s- Pack Storage Path: %s%s%s\n", ANSI_GREEN.c_str(), ANSI_CYAN.c_str(), packStoragePath.c_str(), ANSI_RESET.c_str());
 }
 
 Config::~Config() {
@@ -31,7 +32,7 @@ void Config::load() {
             configFile << CONFIG_PACK_STORAGE_PATH << "=" << DEFAULT_PACK_STORAGE_PATH << "\n";
             configFile.close();
         }
-        isValid = false;
+        mIsValid = false;
         steamLibraryPath = DEFAULT_STEAM_LIBRARY_PATH;
         packStoragePath = DEFAULT_PACK_STORAGE_PATH;
         return;
@@ -39,7 +40,7 @@ void Config::load() {
 
     std::ifstream configFile(configPath);
     if (!configFile.is_open()) {
-        isValid = false;
+        mIsValid = false;
         return;
     }
 
@@ -53,7 +54,7 @@ void Config::load() {
     }
     configFile.close();
 
-    isValid = !steamLibraryPath.empty() && !packStoragePath.empty();
+    mIsValid = !steamLibraryPath.empty() && !packStoragePath.empty();
 }
 
 void Config::save() const {

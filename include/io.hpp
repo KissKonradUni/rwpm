@@ -10,11 +10,10 @@ namespace rwpm {
 #define DEFAULT_STEAM_LIBRARY_PATH "C:\\Program Files (x86)\\Steam\\steamapps\\common\\"
 
 #define CONFIG_PACK_STORAGE_PATH "packStoragePath"
-#define DEFAULT_PACK_STORAGE_PATH ".\\Packs\\"
+#define DEFAULT_PACK_STORAGE_PATH "C:\\RimWorldModpacks\\"
 
 class Config {
 public:
-    bool isValid = false;
     std::string steamLibraryPath;
     std::string packStoragePath;
 
@@ -23,7 +22,16 @@ public:
     
     void load();
     void save() const;
+
+    inline bool isValid() const { return mIsValid; }
 private:
+    bool mIsValid = false;
+};
+
+class Library {
+public:
+    Library() = default;
+    ~Library() = default;
 };
 
 }

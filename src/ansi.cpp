@@ -75,12 +75,15 @@ void ansi::drawBorder(const uint32_t x, const uint32_t y, const uint32_t width, 
 void ansi::drawWindow(const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height, const std::string_view title, const std::string_view description) {
     drawBorder(x, y, width, height);
     
+    std::string fullTitle = ANSI_RESET + "[ " + ANSI_YELLOW + title.data()       + ANSI_RESET + " ]";
+    std::string fullDesc  = ANSI_RESET + "[ " + ANSI_CYAN   + description.data() + ANSI_RESET + " ]";
+
     moveCursor(x + 2, y);
-    printf("%s", title.data());
+    printf("%s", fullTitle.c_str());
     
     if (!description.empty()) {
         moveCursor(x + 2, y + height - 1);
-        printf("%s", description.data());
+        printf("%s", fullDesc.c_str());
     }
 
     moveCursor(1, y + height + 1);

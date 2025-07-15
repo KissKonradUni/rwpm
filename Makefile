@@ -3,7 +3,7 @@
 
 # Compiler and flags
 CXX = clang++
-CXXFLAGS = -Wall -Wextra -pedantic -std=c++23 -O2
+CXXFLAGS = -Wall -Wextra -pedantic -std=c++23
 LDFLAGS = 
 
 # Include directories
@@ -22,8 +22,24 @@ OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 FILE = rwpm
 EXEC = $(BIN_DIR)/$(FILE)
 
-# Default target
-all: prepare $(EXEC)
+# Build modes
+RELEASE_FLAGS = -O2
+DEBUG_FLAGS = -g -O0
+
+# Static link stdlib for release
+RELEASE_LDFLAGS = -static-libstdc++ -static-libgcc
+DEBUG_LDFLAGS =
+
+# Default target: release
+all: release
+
+release: CXXFLAGS += $(RELEASE_FLAGS)
+release: LDFLAGS += $(RELEASE_LDFLAGS)
+release: prepare $(EXEC)
+
+debug: CXXFLAGS += $(DEBUG_FLAGS)
+debug: LDFLAGS += $(DEBUG_LDFLAGS)
+debug: prepare $(EXEC)
 
 # Prepare directories
 prepare:
@@ -49,4 +65,4 @@ clean-all: clean
 run: all
 	cd $(BIN_DIR) && ./$(FILE)
 
-.PHONY: all clean clean-all run prepare
+.PHONY: all clean clean-all run prepare release debug
